@@ -1,0 +1,42 @@
+styles are (text, (optional) shadow, color)
+
+Summary of updates for front-end-2
+
+INSTALL NEW DEPENDENCIES (copy and paste below)
+run npx expo install expo-font
+
+Moved LoginScreen and SignUpScreen onto separate pages in the newly created screens folder
+For navgiation, deleted useNavigation and instead passed it as a parameter
+Ex. const function HomeScreen ({navigation, route})
+you need navigation if you want to navigate to another page, and route if you want to go back
+See lecture for more details
+
+    Not done yet separating styles for pages
+
+    From now on, create pages on separate screens within the screens folder for ease of access
+
+Created components in the components folder
+Basically a folder where I'm taking everything on the Figma files (atoms, molecules etc)
+and replicating them in code. Certain things that don't exist in the app aren't coded
+
+    styles are basic colors and fonts
+    button is mroe the primary and secondary buttons that exist in the app
+    formField is form fields and searchField
+
+    for instruction on use, it is commented in those files
+
+    icons not yet loaded, will probably create a folder inside icons for them
+
+Added responsive scaling to UI elements
+This is in dimensions, basically there's two functions that
+scale the height and width of things based of the screen size
+
+    Use this on any UI elements placed on the screen
+
+    READ comments in dimensionScaling for important info
+
+Added custom fonts
+Lmk if they don't work for you. You shouldn't have to do anything though, except download
+
+For further code, lmk if we have a database that I can hook up to the cards
+and a bare bones structure is good for me for any new stuff
