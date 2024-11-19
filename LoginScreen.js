@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from './firebaseConfig';
 import logo from './assets/foodielogo.png';
 
 const LoginScreen = () => {
@@ -9,7 +12,17 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    alert("User Logged In"); 
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        Alert.alert("Success", "User logged in!");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
+      })
+      .catch((error) => {
+        Alert.alert("Error", error.message);
+      });
   };
 
   return (
@@ -48,47 +61,66 @@ const SignUpScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSignUp = () => {
-    alert("Account Created"); 
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match!");
+      return;
+    }
+  
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        Alert.alert("Success", "Account created!");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
+      })
+      .catch((error) => {
+        Alert.alert("Error", error.message);
+      });
   };
+  
 
   return (
-    <View style={styles.signUpContainer}>
+    <SafeAreaView style={styles.signUpContainer}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Text style={styles.backButton}>{"\u2190"}</Text>
       </TouchableOpacity>
       <Text style={styles.signupTitle}>Sign up</Text>
-      <Text style={styles.signUpLabel}>Email</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email Address"
-        placeholderTextColor="grey"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <Text style={styles.signUpLabel}>Password</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="grey"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <Text style={styles.signUpLabel}>Confirm Password</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        placeholderTextColor="grey"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
-      <TouchableOpacity style={styles.signupButton} onPress={handleSignUp}>
-        <Text style={styles.createAccountText}>Create Account</Text>
-      </TouchableOpacity>
-    </View>
+      <View style={styles.formContainer}>
+        <Text style={styles.signUpLabel}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email Address"
+          placeholderTextColor="grey"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <Text style={styles.signUpLabel}>Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="grey"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        <Text style={styles.signUpLabel}>Confirm Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          placeholderTextColor="grey"
+          secureTextEntry
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
+        <TouchableOpacity style={styles.signupButton} onPress={handleSignUp}>
+          <Text style={styles.createAccountText}>Create Account</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -102,6 +134,11 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#F0F0F0', 
     justifyContent: 'center',
+  },
+  formContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    marginTop: 10,
   },
   logo: {
     alignSelf: 'center',
