@@ -1,12 +1,22 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+//nav
+import { useNavigation } from "@react-navigation/native";
+
+//react
 import { useState } from "react";
+
 //styles
-import { textStyles } from "../styles";
+import { textStyles, colors } from "../styles";
+
 //components
-import { StyleSheet, View, Text } from "react-native";
+import { Button, StyleSheet, View, Text, Platform, Alert } from "react-native";
 import { PrimaryButton, IconButton } from "../components/button";
 import { CustomTextInput } from "../components/formField";
 import { scaleHeight, scaleWidth } from "../components/dimensionScaling";
+
+//firebase
+import { auth } from "../../firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -15,7 +25,7 @@ export default SignUpScreen = ({ navigation }) => {
 
   const handleSignUp = () => {
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match!");
+      Alert.Alert("Error", "Passwords do not match!");
       return;
     }
 
@@ -35,23 +45,11 @@ export default SignUpScreen = ({ navigation }) => {
   //dynamic styles
   const dynamicStyles = StyleSheet.create({
     dynamicContainer: {
-      marginTop: scaleHeight(26),
+      marginTop: Platform.OS === "ios" ? scaleHeight(46) : scaleHeight(26),
       marginLeft: scaleWidth(20),
     },
     header: {
-      marginTop: scaleHeight(30),
-    },
-  });
-
-  const styles = StyleSheet.create({
-    backgroundContainer: {
-      alignSelf: "left",
-    },
-    container: {
-      borderWidth: 2, // Width of the border
-      borderColor: "red", // Color of the border
-      alignSelf: "left",
-      alignItems: "left",
+      marginTop: scaleHeight(8),
     },
   });
 
@@ -60,17 +58,11 @@ export default SignUpScreen = ({ navigation }) => {
       <View style={[styles.container, dynamicStyles.dynamicContainer]}>
         <IconButton
           onPress={() => navigation.goBack()}
-          iconImage="./assets/icons/app-icons/Type=Back,Checked=False.svg"
+          name="back"
+          color={colors.w10}
         />
         <Text style={[dynamicStyles.header, textStyles.h4]}>Sign up</Text>
       </View>
-      <CustomTextInput
-        placeholderText="Enter your email"
-        labelText="Email"
-        value={email}
-        onChangeText={setEmail}
-        width={353}
-      />
 
       <CustomTextInput
         marginTop={18}
@@ -100,6 +92,7 @@ export default SignUpScreen = ({ navigation }) => {
         width={353}
         secureTextEntry={true}
       />
+
       <PrimaryButton
         onPress={handleSignUp}
         title="Create Account"
@@ -108,3 +101,12 @@ export default SignUpScreen = ({ navigation }) => {
     </View>
   );
 };
+const styles = StyleSheet.create({
+  backgroundContainer: {
+    alignSelf: "left",
+  },
+  container: {
+    alignSelf: "left",
+    alignItems: "left",
+  },
+});

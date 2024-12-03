@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  Image,
+  View,
 } from "react-native";
 import { colors, textStyles, shadowStyles } from "../styles.js";
 import { useState } from "react";
@@ -13,6 +13,10 @@ import {
   scaleHeight,
   scaleWidth,
 } from "./dimensionScaling.js";
+
+import CustomIcon from "./iconRender.js";
+
+// import Back from "../../assets/icons/app-icons/back.svg";
 
 /* 
   How to use PrimaryButton and SecondaryButton component
@@ -44,6 +48,7 @@ export const PrimaryButton = ({
   title,
   marginTop,
   paddingHorizontal,
+  marginBottom,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
   const handlePressIn = () => {
@@ -60,6 +65,7 @@ export const PrimaryButton = ({
         buttonStyles.button,
         { borderRadius: scaleBorderRadius(8) },
         { marginTop: scaleHeight(marginTop) },
+        { marginBottom: scaleHeight(marginBottom) },
         { paddingHorizontal: scaleWidth(paddingHorizontal || 15) },
         { paddingVertical: scaleHeight(15) },
         isPressed && buttonStyles.buttonPressed,
@@ -81,7 +87,13 @@ export const PrimaryButton = ({
   );
 };
 
-export const SecondaryButton = ({ onPress, title, marginTop }) => {
+export const SecondaryButton = ({
+  onPress,
+  title,
+  marginTop,
+  marginLeft,
+  marginRight,
+}) => {
   const [isPressed, setIsPressed] = useState(false);
   const handlePressIn = () => {
     setIsPressed(true); // Button is pressed
@@ -95,11 +107,15 @@ export const SecondaryButton = ({ onPress, title, marginTop }) => {
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      style={{ marginTop: scaleHeight(marginTop) }}
+      style={{
+        marginTop: scaleHeight(marginTop),
+        marginLeft: scaleWidth(marginLeft),
+        marginRight: scaleWidth(marginRight),
+      }}
     >
       <Text
         style={[
-          textStyles.bt1,
+          textStyles.bb2,
           { color: colors.r0 },
           isPressed && buttonStyles.secondaryTextPressed,
         ]}
@@ -110,24 +126,51 @@ export const SecondaryButton = ({ onPress, title, marginTop }) => {
   );
 };
 
-export const IconButton = ({ onPress, marginTop, iconImage }) => {
+export const IconButton = ({ onPress, marginTop, name, color }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
       style={[
         { marginTop: scaleHeight(marginTop || 0) },
-        { width: scaleWidth(24) },
-        { height: scaleHeight(24) },
+        { width: scaleWidth(44) },
+        { height: scaleHeight(44) },
       ]}
     >
-      <Image
-        style={[{ width: scaleWidth(24) }, { height: scaleHeight(24) }]}
-        source={iconImage}
-        resizeMode="center"
+      <CustomIcon
+        name={name}
+        width={scaleWidth(24)}
+        height={scaleHeight(24)}
+        color={color}
       />
     </TouchableOpacity>
   );
 };
+
+export const CameraButton = ({ onPress }) => {
+  return (
+    <View>
+      <Pressable
+        onPress={onPress}
+        style={[
+          buttonStyles.cameraButton,
+          {
+            width: scaleWidth(152),
+            height: scaleHeight(113),
+            borderRadius: scaleBorderRadius(8),
+          },
+        ]}
+      >
+        <CustomIcon
+          name="addImage"
+          width={scaleWidth(24)}
+          height={scaleHeight(24)}
+          color={colors.r0}
+        />
+      </Pressable>
+    </View>
+  );
+};
+
 const buttonStyles = StyleSheet.create({
   button: {
     //from style.js
@@ -150,5 +193,13 @@ const buttonStyles = StyleSheet.create({
   },
   secondaryTextPressed: {
     color: colors.r1,
+  },
+  cameraButton: {
+    backgroundColor: colors.w0,
+    borderColor: colors.r0,
+    borderStyle: "dashed",
+    justifyContent: "center",
+    alignItems: "center", // Center horizontally
+    borderWidth: 2,
   },
 });

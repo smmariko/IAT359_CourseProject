@@ -2,21 +2,41 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  TextInput,
+  Modal,
   TouchableOpacity,
   StyleSheet,
   Alert,
   Switch,
   Image,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import Geocoder from "react-native-geocoding";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import * as ImagePicker from "expo-image-picker";
+
+//styles
+import {
+  IconButton,
+  PrimaryButton,
+  SecondaryButton,
+} from "../components/button";
+import { colors, textStyles, shadowStyles } from "../styles";
+import {
+  scaleWidth,
+  scaleHeight,
+  scaleBorderRadius,
+} from "../components/dimensionScaling.js";
+import {
+  CustomLocationInput,
+  CustomTextInput,
+  ScrollCustomTextInput,
+} from "../components/formField";
+import { ImageCarousel } from "../components/images.js";
 
 Geocoder.init("AIzaSyBj-DzHK0Z04dPkkdTfgEqXiS4eJS-cD2o");
 
@@ -29,6 +49,11 @@ export default AddRestaurantScreen = ({ navigation }) => {
   const [longitude, setLongitude] = useState(null);
   const [showReviews, setShowReviews] = useState(false);
   const [placeId, setPlaceId] = useState(null);
+
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const openModal = () => setModalVisible(true); // Function to open modal
+  const closeModal = () => setModalVisible(false); // Function to close modal
 
   const requestPermissions = async () => {
     const { status: cameraStatus } =
@@ -67,6 +92,9 @@ export default AddRestaurantScreen = ({ navigation }) => {
 
       if (!result.canceled) {
         const newImageUri = result.assets ? result.assets[0].uri : result.uri;
+
+        console.log("New Image URI:", newImageUri);
+
         setImages((prevImages) => [...prevImages, newImageUri]);
       }
     } catch (error) {
@@ -104,106 +132,186 @@ export default AddRestaurantScreen = ({ navigation }) => {
     }
   };
 
-  const renderImageItem = ({ item }) => (
-    <Image source={{ uri: item }} style={styles.image} />
-  );
+  // const renderImageItem = ({ item }) => (
+  //   <Image source={{ uri: item }} style={oldStyles.image} />
+  // );
+
+  //styles
+  const dynamicStyles = StyleSheet.create({
+    dynamicHeaderContainer: {
+      marginLeft: scaleWidth(20),
+    },
+    dynamicHeader: {
+      marginTop: scaleHeight(10),
+    },
+  });
 
   return (
-    <SafeAreaView style={styles.safeAreaContainer}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backButton}>{"\u2190"}</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Create Restaurant</Text>
+    <SafeAreaView style={oldStyles.safeAreaContainer}>
+      <View style={dynamicStyles.dynamicHeaderContainer}>
+        <IconButton
+          onPress={() => navigation.goBack()}
+          name="back"
+          color={colors.w10}
+          marginTop={0}
+        />
+        <Text style={[textStyles.h4, dynamicStyles.dynamicHeader]}>
+          Create Restaurant
+        </Text>
       </View>
-      <ScrollView style={styles.container}>
-        <TextInput
-          style={styles.input}
-          placeholder="Restaurant Name"
-          value={name}
-          onChangeText={setName}
+      <CustomTextInput
+        placeholderText={"Restaurant Name"}
+        labelText={"Name"}
+        marginTop={20}
+        value={name}
+        onChangeText={setName}
+      />
+
+      <ScrollCustomTextInput
+        placeholderText={"Type notes here"}
+        labelText={"Notes"}
+        marginTop={20}
+        value={notes}
+        onChangeText={setNotes}
+      />
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ height: 120 }}
+      >
+        <CustomLocationInput
+          placeholderText="Enter Restaurant Location"
+          labelText="Location"
+          marginTop={30}
+          onPress={(data, details = null) => {
+            const { lat, lng } = details.geometry.location;
+            setLocation(data.description);
+            setLatitude(lat);
+            setLongitude(lng);
+            const placeId = data.place_id;
+            setPlaceId(placeId);
+          }}
         />
-        <TextInput
-          style={[styles.input, styles.notesInput]}
-          placeholder="Type notes here"
-          value={notes}
-          onChangeText={setNotes}
-          multiline
-        />
-        <View style={styles.imageContainer}>
-          {images.length > 0 ? (
-            <FlatList
-              data={images}
-              horizontal
-              renderItem={renderImageItem}
-              keyExtractor={(item, index) => index.toString()}
-              style={styles.imageList}
-            />
-          ) : (
-            <View style={styles.imagePlaceholder}>
-              <Text>No Images</Text>
-            </View>
-          )}
-          <View style={styles.imageButtons}>
-            <TouchableOpacity
-              style={styles.addImageButton}
-              onPress={() => handleImagePicker("camera")}
-            >
-              <Text style={styles.addImageText}>Camera</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.addImageButton}
-              onPress={() => handleImagePicker("library")}
-            >
-              <Text style={styles.addImageText}>Library</Text>
-            </TouchableOpacity>
+      </KeyboardAvoidingView>
+
+      {/* <View style={styles.imageContainer}>
+        {images.length > 0 ? (
+          <FlatList
+            data={images}
+            horizontal={true}
+            renderItem={renderImageItem}
+            keyExtractor={(item, index) => index.toString()}
+            style={styles.imageList}
+          />
+        ) : (
+          <View style={styles.imagePlaceholder}>
+            <Text>No Images</Text>
           </View>
+        )}
+        <View style={styles.imageButtons}>
+          <TouchableOpacity
+            style={styles.addImageButton}
+            onPress={() => handleImagePicker("camera")}
+          >
+            <Text style={styles.addImageText}>Camera</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addImageButton}
+            onPress={() => handleImagePicker("library")}
+          >
+            <Text style={styles.addImageText}>Library</Text>
+          </TouchableOpacity>
         </View>
+      </View> */}
 
-        <View style={styles.autocompleteContainer}>
-          <GooglePlacesAutocomplete
-            placeholder="Enter Restaurant Location"
-            fetchDetails={true}
-            onPress={(data, details = null) => {
-              const { lat, lng } = details.geometry.location;
-              setLocation(data.description);
-              setLatitude(lat);
-              setLongitude(lng);
-              const placeId = data.place_id;
-              setPlaceId(placeId);
-            }}
-            query={{
-              key: "AIzaSyBj-DzHK0Z04dPkkdTfgEqXiS4eJS-cD2o",
-              language: "en",
-            }}
-            styles={{
-              textInput: styles.input,
-              listView: styles.listView,
-              row: styles.autocompleteRow,
-            }}
-          />
-        </View>
+      <ImageCarousel
+        openModal={openModal}
+        imageArray={images}
+        isHeader={true}
+        isLabel={true}
+        marginTop={20}
+        marginLeft={20}
+      />
 
-        <View style={styles.toggleContainer}>
-          <Text>Show Google Reviews of this restaurant</Text>
-          <Switch
-            value={showReviews}
-            onValueChange={(value) => setShowReviews(value)}
-          />
-        </View>
-
+      <Modal
+        transparent={true}
+        onRequestClose={closeModal}
+        animationType="fade"
+        visible={isModalVisible}
+      >
         <TouchableOpacity
-          style={styles.createButton}
-          onPress={handleAddRestaurant}
+          style={styles.overlay}
+          activeOpacity={1}
+          onPress={closeModal}
         >
-          <Text style={styles.createButtonText}>Create</Text>
+          <View
+            style={[
+              styles.card,
+              {
+                borderRadius: scaleBorderRadius(8),
+                width: scaleWidth(330),
+                height: scaleHeight(154),
+              },
+            ]}
+          >
+            <Text
+              style={[
+                textStyles.h4,
+                {
+                  marginTop: scaleHeight(30),
+                  marginLeft: scaleWidth(93),
+                  color: colors.w10,
+                },
+              ]}
+            >
+              Add Photo
+            </Text>
+
+            <View
+              style={[
+                styles.horizontalLine,
+                { width: scaleWidth(330), marginTop: scaleHeight(20) },
+              ]}
+            />
+            <View style={styles.buttonContainer}>
+              <SecondaryButton
+                onPress={() => handleImagePicker("camera")}
+                title="Camera"
+                marginLeft={0}
+              />
+              <View
+                style={[styles.VerticalLine, { height: scaleHeight(67) }]}
+              />
+              <SecondaryButton
+                onPress={() => handleImagePicker("library")}
+                title="Library"
+                marginLeft={0}
+              />
+            </View>
+          </View>
         </TouchableOpacity>
-      </ScrollView>
+      </Modal>
+      <Text style={styles.reviewLabel}>Reviews</Text>
+      <View style={oldStyles.toggleContainer}>
+        <Text style={(textStyles.b3, { marginLeft: scaleWidth(20) })}>
+          Show Google Reviews of this restaurant
+        </Text>
+        <Switch
+          style={{ marginRight: scaleWidth(20) }}
+          value={showReviews}
+          onValueChange={(value) => setShowReviews(value)}
+        />
+      </View>
+      <PrimaryButton
+        marginTop={-10}
+        title="Create"
+        onPress={handleAddRestaurant}
+      />
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
+const oldStyles = StyleSheet.create({
   safeAreaContainer: {
     flex: 1,
     backgroundColor: "#fff",
@@ -304,5 +412,37 @@ const styles = StyleSheet.create({
   createButtonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+});
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: colors.w0,
+    buttonShadow: shadowStyles.buttonShadow,
+  },
+  horizontalLine: {
+    height: 1,
+    backgroundColor: colors.w3,
+  },
+  VerticalLine: {
+    backgroundColor: colors.w3,
+    width: 1,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  reviewLabel: {
+    marginLeft: 20,
+    marginTop: 30,
+    ...textStyles.bb3,
+    color: colors.w10,
   },
 });

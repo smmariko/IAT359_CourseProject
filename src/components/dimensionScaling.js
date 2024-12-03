@@ -52,5 +52,5 @@ export const scaleHeight = (size) => (height / BASE_HEIGHT) * size;
 
 // Scale borderRadius
 export const scaleBorderRadius = (size) => {
-    return Math.min(scaleWidth(size), scaleHeight(size));
-  };
+  return Math.min(scaleWidth(size), scaleHeight(size));
+};

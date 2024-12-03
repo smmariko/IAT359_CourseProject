@@ -16,7 +16,6 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 
 export default EditRestaurantScreen = ({ route, navigation }) => {
   const { restaurant } = route.params;
-
   const [name, setName] = useState(restaurant.name);
   const [notes, setNotes] = useState(restaurant.notes);
   const [location, setLocation] = useState(restaurant.location);

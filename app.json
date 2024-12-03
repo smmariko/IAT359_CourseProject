@@ -4,10 +4,11 @@
     "slug": "IAT359_CourseProject",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icons/foodielogo.png",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icons/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -16,12 +17,25 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/icons/favicon.png"
+    },
+    
+    "plugins": [
+      [
+      "expo-font", 
+      {
+        "fonts": [
+          "./assets/fonts/GT-Walsheim-Bold-Trial.otf",
+          "./assets/fonts/GT-Walsheim-Medium-Trial.otf",
+          "./assets/fonts/GT-Walsheim-Regular-Trial.otf"
+        ]
+      }
+    ]
+    ]
   }
 }

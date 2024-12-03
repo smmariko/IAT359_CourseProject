@@ -1,0 +1,7 @@
+INSTALL NEW DEPENDENCIES (copy and paste below)
+npm install react-native-svg
+npm install --save-dev react-native-svg-transformer
+
+My login
+sophmmariko@gmail.com
+Password: testing1234

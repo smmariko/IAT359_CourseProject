@@ -9,11 +9,13 @@ import {
   Alert,
   Modal,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { collection, onSnapshot, doc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
-export default HomeScreen = ({ navigation }) => {
+import { Header } from "../components/header";
+import { Card } from "../components/card";
+
+export default HomeScreen = ({ navigation, route }) => {
   const [restaurants, setRestaurants] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -78,24 +80,19 @@ export default HomeScreen = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>My Restaurants</Text>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => setEditMode(!editMode)}
-        >
-          <Text style={styles.editButtonText}>
-            {editMode ? "Done" : "Edit"}
-          </Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.container}>
+      <Header
+        type={editMode}
+        onEditPress={() => setEditMode((prevMode) => !prevMode)}
+        // onLogoutPress={() => } //needs to be logout press stuff here
+      />
       <FlatList
         data={restaurants}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
       />
+
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => navigation.navigate("AddRestaurant")}
@@ -145,7 +142,7 @@ export default HomeScreen = ({ navigation }) => {
           </View>
         </Modal>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 

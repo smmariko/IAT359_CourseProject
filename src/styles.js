@@ -1,5 +1,3 @@
-import { StyleSheet } from "react-native";
-
 /*
 Styles
 
@@ -21,7 +19,40 @@ Styles
     ...shadowStyles.buttonShadowm,
   },
   });
+
+  Icons work a bit different. Use it in combination with CustomIcon to select whatever SVG you
+  want from your imported SVGs.
 */
+
+import { StyleSheet } from "react-native";
+
+import AddImage from "../assets/icons/app-icons/addimage.svg";
+import Add from "../assets/icons/app-icons/add.svg";
+import ArrowDown from "../assets/icons/app-icons/arrowdown.svg";
+import ArrowUp from "../assets/icons/app-icons/arrowup.svg";
+import Back from "../assets/icons/app-icons/back.svg";
+import Delete from "../assets/icons/app-icons/delete.svg";
+import Edit from "../assets/icons/app-icons/edit.svg";
+import RadioButton from "../assets/icons/app-icons/radiobutton.svg";
+import RadioButtonChecked from "../assets/icons/app-icons/radiobuttonchecked.svg";
+import Search from "../assets/icons/app-icons/search.svg";
+import Toggle from "../assets/icons/app-icons/toggle.svg";
+import ToggleChecked from "../assets/icons/app-icons/togglechecked.svg";
+
+export const icons = {
+  addImage: AddImage,
+  add: Add,
+  arrowDown: ArrowDown,
+  arrowUp: ArrowUp,
+  back: Back,
+  delete: Delete,
+  edit: Edit,
+  radioButton: RadioButton,
+  radioButtonChecked: RadioButtonChecked,
+  search: Search,
+  toggle: Toggle,
+  toggleChecked: ToggleChecked,
+};
 
 export const colors = {
   //Same as Figma file
